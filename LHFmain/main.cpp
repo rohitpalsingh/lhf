@@ -58,6 +58,21 @@ int main(int argc, char* argv[]){
 		//Read data from inputFile CSV
 		wD.inputData = rs.readCSV(args["inputFile"]);
 		wD.workData = wD.inputData;
+
+		std::vector<std::set<unsigned>> edges(wD.inputData.size());
+		std::ifstream file(args["edgeFile"]);
+		
+		if(!file){
+			std::cout << "Failed to open file: " << args["edgeFile"] << std::endl;
+			return 0;
+		}
+		// We are going to iterate through each line of the file until we reach the end
+		unsigned i, j;
+		while(file >> i >> j){
+			edges[std::min(i,j) - 1].insert(std::max(i,j) - 1);
+		}
+		
+		wD.edges = edges;
 	}
 
 	//If data was found in the inputFile

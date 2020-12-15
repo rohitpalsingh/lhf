@@ -26,7 +26,8 @@ distMatrixPipe::distMatrixPipe(){
 
 // runPipe -> Run the configured functions of this pipeline segment
 void distMatrixPipe::runPipe(pipePacket &inData){
-	
+	double enclosingRadius = maxEpsilon;
+
 	//Store our distance matrix
 	if(inData.distMatrix.size() > 0) inData.distMatrix.clear();
 	inData.distMatrix.resize(inData.workData.size(), std::vector<double>(inData.workData.size(),0));
@@ -36,7 +37,11 @@ void distMatrixPipe::runPipe(pipePacket &inData){
 		//Grab a second vector to compare to 
 		for(unsigned j = i+1; j < inData.workData.size(); j++){
 			//Calculate vector distance 
-			inData.distMatrix[i][j] = ut.vectors_distance(inData.workData[i],inData.workData[j]);
+			if(inData.isCentroid || (inData.edges[inData.partitionedLabels[i]]).count(inData.partitionedLabels[j]))
+				inData.distMatrix[i][j] = std::max(inData.workData[i][2], inData.workData[j][2]);
+				//ut.vectors_distance(inData.workData[i],inData.workData[j]);
+			else
+				inData.distMatrix[i][j] = maxEpsilon + 1;
 		}
 	}
 
@@ -71,7 +76,7 @@ bool distMatrixPipe::configPipe(std::map<std::string, std::string> &configMap){
 	
 	pipe = configMap.find("epsilon");
 	if(pipe != configMap.end())
-		enclosingRadius = std::atof(configMap["epsilon"].c_str());
+		maxEpsilon = std::atof(configMap["epsilon"].c_str());
 	else return false;
 
 	configured = true;

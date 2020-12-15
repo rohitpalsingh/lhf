@@ -26,6 +26,10 @@ class pipePacket {
 	std::set<double, std::greater<double>> weights;	
 	std::string bettiOutput;
 	
+	std::vector<std::set<unsigned>> edges;
+	std::vector<unsigned> partitionedLabels;
+	bool isCentroid = false;
+
 	double getSize();	
 };
 

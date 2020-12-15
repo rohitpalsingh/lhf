@@ -76,7 +76,7 @@ void LHF::processDataWrapper(std::map<std::string, std::string> args, pipePacket
 	}
 }	
 
-std::vector<bettiBoundaryTableEntry> LHF::processParallel(std::map<std::string, std::string> args, std::vector<unsigned> &centroidLabels, std::pair<std::vector<std::vector<unsigned>>, std::vector<std::vector<std::vector<double>>>> &partitionedData, int displacement){
+std::vector<bettiBoundaryTableEntry> LHF::processParallel(std::map<std::string, std::string> args, std::vector<unsigned> &centroidLabels, std::pair<std::vector<std::vector<unsigned>>, std::vector<std::vector<std::vector<double>>>> &partitionedData, std::vector<std::set<unsigned>> &edges, int displacement){
 	//		Parameters	
 	auto threshold = std::atoi(args["threshold"].c_str());
 	auto maxEpsilon = std::atof(args["epsilon"].c_str());
@@ -133,6 +133,7 @@ std::vector<bettiBoundaryTableEntry> LHF::processParallel(std::map<std::string, 
 				if(partitionedData.second[z].size() > 0){
 					iterwD.inputData = partitionedData.second[z];
 					iterwD.workData = partitionedData.second[z];
+					iterwD.isCentroid = true;
 					runPipeline(centArgs, iterwD);
 
 					delete iterwD.complex;
@@ -147,7 +148,9 @@ std::vector<bettiBoundaryTableEntry> LHF::processParallel(std::map<std::string, 
 				auto curwD = pipePacket(args, args["complexType"]);	
 				curwD.workData = partitionedData.second[z];
 				curwD.inputData = partitionedData.second[z];
-				
+				curwD.edges = edges;
+				curwD.partitionedLabels = partitionedData.first[z];
+
 				//		If the current partition is smaller than the threshold, process
 				//			Otherwise recurse to reduce the number of points
 				
@@ -318,7 +321,7 @@ std::vector<bettiBoundaryTableEntry> LHF::processIterUpscale(std::map<std::strin
 	//		Append the centroid dataset to run in parallel as well
 	partitionedData.second.push_back(iterwD.workData);
 	
-	return processParallel(args, iterwD.centroidLabels, partitionedData);
+	return processParallel(args, iterwD.centroidLabels, partitionedData, wD.edges);
 }
 
 
@@ -585,7 +588,8 @@ std::vector<bettiBoundaryTableEntry> LHF::processUpscaleWrapper(std::map<std::st
 		//Local Storage
 		auto originalDataSize = wD.workData.size();
 
-		std::vector<bettiBoundaryTableEntry> mergedBettiTable = processParallel(args, originalLabels, partitionedData, displacement);
+		std::vector<bettiBoundaryTableEntry> mergedBettiTable;
+		// = processParallel(args, originalLabels, partitionedData, displacement);
 
 		//Serialize bettie table to send to master process for merging
 		for(auto bet : mergedBettiTable){
