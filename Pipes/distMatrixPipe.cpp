@@ -31,19 +31,30 @@ void distMatrixPipe::runPipe(pipePacket &inData){
 	//Store our distance matrix
 	if(inData.distMatrix.size() > 0) inData.distMatrix.clear();
 	inData.distMatrix.resize(inData.workData.size(), std::vector<double>(inData.workData.size(),0));
-	
+
 	//Iterate through each vector, create lower
 	for(unsigned i = 0; i < inData.workData.size(); i++){
 		//Grab a second vector to compare to 
 		for(unsigned j = i+1; j < inData.workData.size(); j++){
-			//Calculate vector distance 
-			if(inData.isCentroid || (inData.edges[inData.partitionedLabels[i]]).count(inData.partitionedLabels[j]))
+			if(inData.isCentroid){
 				inData.distMatrix[i][j] = std::max(inData.workData[i][2], inData.workData[j][2]);
-				//ut.vectors_distance(inData.workData[i],inData.workData[j]);
-			else
-				inData.distMatrix[i][j] = maxEpsilon + 1;
+			} else{
+				unsigned u = inData.partitionedLabels[i], v = inData.partitionedLabels[j];
+				//Calculate vector distance 
+				if((inData.edges[std::min(u, v)]).count(std::max(u, v)))
+					inData.distMatrix[i][j] = std::max(inData.workData[i][2], inData.workData[j][2]);
+				else
+					inData.distMatrix[i][j] = maxEpsilon + 1;
+			}
 		}
 	}
+
+	// for(int i = 0; i < inData.distMatrix.size(); i++){
+	// 	for(int j = 0; j < inData.distMatrix.size(); j++){
+	// 		std::cout<<inData.distMatrix[i][j] << ' ';
+	// 	}
+	// 	std::cout<<'\n';
+	// }
 
 	for(unsigned i = 0; i < inData.workData.size(); i++){
 		double r_i = 0;

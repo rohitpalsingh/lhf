@@ -116,7 +116,8 @@ std::vector<bettiBoundaryTableEntry> LHF::processParallel(std::map<std::string, 
 
 			//Check if we are running the centroid dataset (there's no label associated)
 			//---------------------------------TODO: FIX WITH BOTH VERSIONS -------------------------------------------------------------
-			if(partitionedData.second[z].size() == clusters){
+			if(z == sortpartitions.size() - 1){
+			// if(partitionedData.second[z].size() == clusters){
 				
 				std::cout<<"Running centroids with "<<clusters<<" clusters; id = "<<id<<std::endl;
 
