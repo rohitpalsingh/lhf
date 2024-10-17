@@ -53,10 +53,10 @@ cd LHFmain
 
  | Argument  | Shorthand | Default | Description | DataType
  | ------------- | ------------- | ------------- | ------------- | ------------- | 
- | --betaMesh | -bmesh | null.csv |  |  | 
- | --betaMode | -bm | noMode |  |  | 
- | --beta | -b | 1 |  |  | 
- | --alphaFilterationValue | -afv | 50000 |  |  | 
+ | --betaMesh | -bmesh | null.csv | input Simplex Mesh | filename | 
+ | --betaMode | -bm | noMode | highDimCircle(Ambinent Dimension),highDimLune(Ambinent Dimension),betaHighLune(SubSpace Dimension),betaHighCircle(SubSpace Dimension) |  | 
+ | --beta | -b | 1 | Sparsification Factor beta >=0 | float | 
+ | --alphaFilterationValue | -afv | 50000 | ballRadius | float  | 
  | --nodeType | -n | simplexNode |  |  | 
  | --reductionPercentage | -rp | 10 |  |  | 
  | --maxSize | -ms | 2000 |  |  | 
